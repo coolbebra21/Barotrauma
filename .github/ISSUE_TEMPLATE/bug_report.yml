@@ -71,5 +71,6 @@ body:
     id: errors
     attributes:
       label: Relevant error messages and crash reports
-      description: If the game produces any text relevant to your issue, please include those in full. You can copy error messages from the in-game console by right clicking the error and selecting "copy". Crash reports will be generated in the local game files on your computer, [add proper location and other details]
+      description: If the game produces any text relevant to your issue, please include those in full. You can copy error messages from the in-game console by right clicking the error and selecting "copy". 
+      Crash reports will be named crashreport.log or servercrashreport.log and they're automatically generated into the root of the game's installation folder on your computer. You can usually find the game files location through Steam (Right click Barotrauma in your Steam Library -> Properties -> Local files -> Browse local files).
       render: shell
