@@ -4,7 +4,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
+        Thanks for taking the time to report a bug! Actionable reports are very important in identifying and fixing bugs, so please fill out all the fields carefully and provide as much information as you can while being concise. Please also note that we get lots of reports and may not always write back to each individually – that does not mean we have not read it.
   - type: checkboxes
     id: checks
     attributes:
@@ -12,7 +12,7 @@ body:
       options:
         - label: "I have searched the issue tracker to check if the issue has already been reported."
           required: true
-        - label: "My issue happened while using mods"
+        - label: "My issue happened while using mods."
           required: false
   - type: textarea
     id: what-happened
@@ -48,7 +48,7 @@ body:
     id: version
     attributes:
       label: Version
-      description: Which version of the game did the bug happen in? TODO - Explain where the version can be found.
+      description: Which version of the game did the bug happen in? You can see the current version number in the bottom left corner of your screen in the main menu.
       options:
         - 0.17.15.0
         - Other
@@ -57,7 +57,7 @@ body:
   - type: input
     id: otherversion
     attributes:
-      label: Other version
+      label: "-"
       description: If you selected "Other" on the version selection, please specify your selection here.
   - type: dropdown
     id: operating-systems
