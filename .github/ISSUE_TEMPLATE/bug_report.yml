@@ -58,7 +58,7 @@ body:
     id: otherversion
     attributes:
       label: "-"
-      description: If you selected "Other" on the version selection, please specify your selection here.
+      description: If you selected "Other" in the above dropdown because you are e.g. using a custom build, please tell us more about it here.
   - type: dropdown
     id: operating-systems
     attributes:
