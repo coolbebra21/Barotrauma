@@ -68,6 +68,8 @@ body:
         - Windows
         - MacOS
         - Linux
+    validations:
+      required: true
   - type: textarea
     id: errors
     attributes:
