@@ -12,52 +12,56 @@ body:
       options:
         - label: "I have searched the issue tracker to check if the issue has already been reported."
           required: true
-        - label: "I'm using mods."
+        - label: "My issue happened while using mods"
           required: false
   - type: textarea
     id: what-happened
     attributes:
       label: What happened?
-      description: Also tell us, what did you expect to happen?
-      placeholder: Tell us what you see!
-      value: "A bug happened!"
+      description: Please tell us also what you expected should have happened if the game was behaving correctly.
+      value: "Using the bike horn crashes the game."
     validations:
       required: true
   - type: textarea
     id: repro
     attributes:
       label: Reproduction steps
-      description: "How did you trigger this bug? Please walk us through it step by step."
+      description: If possible, describe how the developers can get the bug to happen. It is often extremely hard to fix a bug if we don't know how to reproduce it.
       value: |
-        1.
-        2.
-        3.
-        ...
+        1. Start a multiplayer campaign
+        2. Spawn a bike horn with console commands
+        3. Use the bike horn
+        4. Observe how the game crashes
       render: bash
-  - type: input
+  - type: dropdown
     id: prevalence
     attributes:
       label: Bug prevalence
       description: "How often do you or others encounter this bug?"
-      placeholder: "Example: TODO"
+      options:
+        - 1
+        - <5
+        - >5
     validations:
       required: true
   - type: dropdown
     id: version
     attributes:
       label: Version
-      description: Which version of the game did the bug happen in.
+      description: Which version of the game did the bug happen in? TODO - Explain where the version can be found
       options:
         - 0.17.15.0
-        - 0.17.15.0 (Unstable)
+        - Other
     validations:
       required: true
+  - type: input
+    id: otherversion
+    attributes:
+      description: "If you selected "Other" on the version selection, please specify your selection here"
   - type: dropdown
     id: operating-systems
     attributes:
-      label: Which operating systems have you used?
-      description: You may select more than one.
-      multiple: true
+      label: Which operating system did you encounter this bug on?
       options:
         - Windows
         - MacOS
