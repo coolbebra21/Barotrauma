@@ -40,8 +40,8 @@ body:
       description: "How often do you or others encounter this bug?"
       options:
         - 1
-        - <5
-        - >5
+        - "<5"
+        - ">5"
     validations:
       required: true
   - type: dropdown
