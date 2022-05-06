@@ -1,0 +1,73 @@
+name: Bug Report
+description: Found a bug? Help us squash it by making a bug report!
+title:
+labels:
+assignees:
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: checkboxes
+    id: checks
+      attributes:
+      label:
+      description:
+      multiple: true
+      options:
+          - I have searched the issue tracker to check if the issue has already been reported.
+          - I'm using mods.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+      value: "A bug happened!"
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction steps
+      description: "How did you trigger this bug? Please walk us through it step by step."
+      value: |
+        1.
+        2.
+        3.
+        ...
+      render: bash
+  - type: input
+    id: prevalence
+    attributes:
+      label: Bug prevalence
+      description: "How often do you or others encounter this bug?"
+      placeholder: "Example: TODO"
+    validations:
+      required: true
+- type: dropdown
+  id: version
+  attributes:
+    label: Version
+    description: Which version of the game did the bug happen in.
+    options:
+      - 0.17.15.0
+      - 0.17.15.0 (Unstable)
+  validations:
+    required: true
+  - type: checkboxes
+    id: operating-systems
+    attributes:
+      label: Which operating systems have you used?
+      description: You may select more than one.
+      multiple: true
+      options:
+        - Windows
+        - MacOS
+        - Linux
+  - type: textarea
+    id: errors
+    attributes:
+      label: Relevant errors/crashes
+      description: Please copy and paste any relevant error/crash output. You can copy errors from the console ingame by right clicking it and selecting copy.
+      render: shell
