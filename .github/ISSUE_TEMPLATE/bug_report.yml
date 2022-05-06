@@ -58,7 +58,7 @@ body:
     id: otherversion
     attributes:
       label: Other version
-      description: "If you selected "Other" on the version selection, please specify your selection here"
+      description: If you selected "Other" on the version selection, please specify your selection her
   - type: dropdown
     id: operating-systems
     attributes:
