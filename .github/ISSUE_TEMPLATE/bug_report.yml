@@ -39,9 +39,10 @@ body:
       label: Bug prevalence
       description: "How often do you or others encounter this bug?"
       options:
-        - 1
-        - "<5"
-        - ">5"
+        - Just once
+        - Happens every now and then
+        - Happens regularly
+        - Happens every time I play
     validations:
       required: true
   - type: dropdown
