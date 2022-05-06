@@ -11,12 +11,12 @@ body:
   - type: checkboxes
     id: checks
       attributes:
-      label:
-      description:
-      multiple: true
-      options:
-          - I have searched the issue tracker to check if the issue has already been reported.
-          - I'm using mods.
+        label:
+        description:
+        multiple: true
+        options:
+            - I have searched the issue tracker to check if the issue has already been reported.
+            - I'm using mods.
   - type: textarea
     id: what-happened
     attributes:
