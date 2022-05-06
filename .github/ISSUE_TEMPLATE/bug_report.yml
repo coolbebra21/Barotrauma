@@ -45,11 +45,11 @@ body:
   - type: dropdown
     id: version
     attributes:
-    label: Version
-    description: "Which version of the game did the bug happen in."
-    options:
-      - 0.17.15.0
-      - 0.17.15.0 (Unstable)
+      label: Version
+      description: Which version of the game did the bug happen in.
+      options:
+        - 0.17.15.0
+        - 0.17.15.0 (Unstable)
     validations:
       required: true
   - type: dropdown
