@@ -10,13 +10,13 @@ body:
         Thanks for taking the time to fill out this bug report!
   - type: checkboxes
     id: checks
-      attributes:
-        label:
-        description:
-        multiple: true
-        options:
-            - I have searched the issue tracker to check if the issue has already been reported.
-            - I'm using mods.
+    attributes:
+      label:
+      description:
+      multiple: true
+      options:
+          - I have searched the issue tracker to check if the issue has already been reported.
+          - I'm using mods.
   - type: textarea
     id: what-happened
     attributes:
