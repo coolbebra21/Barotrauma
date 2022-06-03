@@ -387,6 +387,8 @@ namespace Barotrauma
             Label(audio, TextManager.Get("SoundVolume"), GUIStyle.SubHeadingFont);
             Slider(audio, (0, 1), 101, Percentage, unsavedConfig.Audio.SoundVolume, (v) => unsavedConfig.Audio.SoundVolume = v);
 
+            Tickbox(audio, "Mute Ambience", "Mutes ambience", unsavedConfig.Audio.MuteAmbience, (v) => unsavedConfig.Audio.MuteAmbience = v);
+
             Label(audio, TextManager.Get("MusicVolume"), GUIStyle.SubHeadingFont);
             Slider(audio, (0, 1), 101, Percentage, unsavedConfig.Audio.MusicVolume, (v) => unsavedConfig.Audio.MusicVolume = v);
 

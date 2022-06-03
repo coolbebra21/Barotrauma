@@ -224,6 +224,7 @@ namespace Barotrauma
                     {
                         MusicVolume = 0.3f,
                         SoundVolume = 0.5f,
+                        MuteAmbience = false,
                         VoiceChatVolume = 0.5f,
                         VoiceChatCutoffPrevention = 0,
                         MicrophoneVolume = 5,
@@ -247,6 +248,7 @@ namespace Barotrauma
 
                 public float MusicVolume;
                 public float SoundVolume;
+                public bool MuteAmbience;
                 public float VoiceChatVolume;
                 public int VoiceChatCutoffPrevention;
                 public float MicrophoneVolume;

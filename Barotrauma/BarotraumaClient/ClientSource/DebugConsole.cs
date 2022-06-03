@@ -33,16 +33,6 @@ namespace Barotrauma
 
             public void ClientExecute(string[] args)
             {
-                bool allowCheats = GameMain.NetworkMember == null && (GameMain.GameSession?.GameMode is TestGameMode || Screen.Selected is EditorScreen);
-                if (!allowCheats && !CheatsEnabled && IsCheat)
-                {
-                    NewMessage("You need to enable cheats using the command \"enablecheats\" before you can use the command \"" + names[0] + "\".", Color.Red);
-#if USE_STEAM
-                    NewMessage("Enabling cheats will disable Steam achievements during this play session.", Color.Red);
-#endif
-                    return;
-                }
-
                 if (OnClientExecute != null)
                 {
                     OnClientExecute(args);
@@ -251,6 +241,15 @@ namespace Barotrauma
                 case "unbindkey":
                 case "wikiimage_character":
                 case "wikiimage_sub":
+                case "defreecam":
+                case "defreecamera":
+                case "lights":
+                case "lighting":
+                case "freecam":
+                case "freecamera":
+                case "los":
+                case "ambientlight":
+                case "debugdraw":
                     return true;
                 default:
                     return client.HasConsoleCommandPermission(command);
@@ -680,7 +679,10 @@ namespace Barotrauma
             AssignRelayToServer("campaigninfo", false);
             AssignRelayToServer("help", false);
             AssignRelayToServer("verboselogging", false);
+            AssignRelayToServer("freecamera", false);
             AssignRelayToServer("freecam", false);
+            AssignRelayToServer("defreecam", false);
+            AssignRelayToServer("defreecamera", false);
             AssignRelayToServer("steamnetdebug", false);
             AssignRelayToServer("quickstart", false);
             AssignRelayToServer("togglegrid", false);

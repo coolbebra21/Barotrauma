@@ -596,6 +596,7 @@ namespace Barotrauma.Items.Components
             }            
         }
 
+        private Vector2 _lastvector;
         /// <summary>
         /// Returns correct angle between -2PI and +2PI
         /// </summary>
@@ -604,6 +605,13 @@ namespace Barotrauma.Items.Components
         private float GetRotationAngle(Vector2 drawPosition)
         {
             Vector2 mouseVector = Screen.Selected.Cam.ScreenToWorld(PlayerInput.MousePosition);
+            if (!GUI.InputBlockingMenuOpen)
+            {
+                _lastvector = mouseVector;
+            } else
+            {
+                mouseVector = _lastvector;
+            }
             mouseVector.Y = -mouseVector.Y;
             Vector2 rotationVector = mouseVector - drawPosition;
             rotationVector.Normalize();

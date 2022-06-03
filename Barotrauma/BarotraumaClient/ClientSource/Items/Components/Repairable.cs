@@ -227,7 +227,7 @@ namespace Barotrauma.Items.Components
             if (FakeBrokenTimer > 0.0f)
             {
                 item.FakeBroken = true;
-                if (Character.Controlled == null || (Character.Controlled.CharacterHealth.GetAffliction("psychosis")?.Strength ?? 0.0f) <= 0.0f)
+                if (Character.Controlled == null)
                 {
                     FakeBrokenTimer = 0.0f;
                 }

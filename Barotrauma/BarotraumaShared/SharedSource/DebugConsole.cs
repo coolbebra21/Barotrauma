@@ -69,19 +69,6 @@ namespace Barotrauma
             {
                 if (OnExecute == null) { return; }
 
-                bool allowCheats = false;
-#if CLIENT
-                allowCheats = GameMain.NetworkMember == null && (GameMain.GameSession?.GameMode is TestGameMode || Screen.Selected is EditorScreen);
-#endif
-                if (!allowCheats && !CheatsEnabled && IsCheat)
-                {
-                    NewMessage("You need to enable cheats using the command \"enablecheats\" before you can use the command \"" + names[0] + "\".", Color.Red);
-#if USE_STEAM
-                    NewMessage("Enabling cheats will disable Steam achievements during this play session.", Color.Red);
-#endif
-                    return;
-                }
-
                 OnExecute(args);
             }
 
@@ -742,18 +729,24 @@ namespace Barotrauma
             {
 #if CLIENT
                 if (Screen.Selected == GameMain.SubEditorScreen) { return; }
-
-                if (GameMain.Client == null)
-                {
-                    Character.Controlled = null;
-                    GameMain.GameScreen.Cam.TargetPos = Vector2.Zero;
-                }
-                else
-                {
-                    GameMain.Client?.SendConsoleCommand("freecam");
-                }
+                if (Character.Controlled == null) { return; }
+                Character.LastControled = Character.Controlled;
+                Character.Controlled = null;
+                GameMain.GameScreen.Cam.TargetPos = Vector2.Zero;
+                // GameMain.Client?.SendConsoleCommand("freecam");
 #endif
-            }, isCheat: true));
+            }));
+
+            commands.Add(new Command("defreecamera|defreecam", "defreecam: attach the camera from to last controlled character.", (string[] args) =>
+            {
+#if CLIENT
+                if (Screen.Selected == GameMain.SubEditorScreen) { return; }
+                if (Character.LastControled == null) { return; }
+                Character.Controlled = Character.LastControled;
+                GameMain.GameScreen.Cam.TargetPos = Vector2.Zero;
+                // GameMain.Client?.SendConsoleCommand("freecam");
+#endif
+            }));
 
             commands.Add(new Command("eventmanager", "eventmanager: Toggle event manager on/off. No new random events are created when the event manager is disabled.", (string[] args) =>
             {
@@ -1836,9 +1829,9 @@ namespace Barotrauma
                 return new string[][] { ListCharacterNames() };
             }, isCheat: true));
             commands.Add(new Command("los", "Toggle the line of sight effect on/off (client-only).", null, isCheat: true));
-            commands.Add(new Command("lighting|lights", "Toggle lighting on/off (client-only).", null, isCheat: true));
-            commands.Add(new Command("ambientlight", "ambientlight [color]: Change the color of the ambient light in the level.", null, isCheat: true));
-            commands.Add(new Command("debugdraw", "Toggle the debug drawing mode on/off (client-only).", null, isCheat: true));
+            commands.Add(new Command("lighting|lights", "Toggle lighting on/off (client-only).", null));
+            commands.Add(new Command("ambientlight", "ambientlight [color]: Change the color of the ambient light in the level.", null));
+            commands.Add(new Command("debugdraw", "Toggle the debug drawing mode on/off (client-only).", null));
             commands.Add(new Command("togglevoicechatfilters", "Toggle the radio/muffle filters in the voice chat (client-only).", null, isCheat: false));
             commands.Add(new Command("togglehud|hud", "Toggle the character HUD (inventories, icons, buttons, etc) on/off (client-only).", null));
             commands.Add(new Command("toggleupperhud", "Toggle the upper part of the ingame HUD (chatbox, crewmanager) on/off (client-only).", null));

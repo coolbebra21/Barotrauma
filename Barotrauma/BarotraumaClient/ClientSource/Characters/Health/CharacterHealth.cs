@@ -1299,7 +1299,7 @@ namespace Barotrauma
             Dictionary<Identifier, float> treatmentSuitability = new Dictionary<Identifier, float>();
             GetSuitableTreatments(treatmentSuitability,
                 normalize: true,
-                ignoreHiddenAfflictions: true,
+                ignoreHiddenAfflictions: false,
                 limb: selectedLimbIndex == -1 ? null : Character.AnimController.Limbs.Find(l => l.HealthIndex == selectedLimbIndex));
 
             foreach (Identifier treatment in treatmentSuitability.Keys.ToList())

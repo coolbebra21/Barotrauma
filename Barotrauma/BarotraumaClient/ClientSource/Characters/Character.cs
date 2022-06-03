@@ -47,7 +47,18 @@ namespace Barotrauma
 
         //the Character that the player is currently controlling
         private static Character controlled;
-        
+        private static Character lastcontroled;
+
+        public static Character LastControled
+        {
+            get { return lastcontroled; }
+            set
+            {
+                if (lastcontroled == value) return;
+                lastcontroled = value;
+            }
+        }
+
         public static Character Controlled
         {
             get { return controlled; }
@@ -636,7 +647,7 @@ namespace Barotrauma
         {
             if (InvisibleTimer > 0.0f)
             {
-                if (Controlled == null || Controlled == this || (Controlled.CharacterHealth.GetAffliction("psychosis")?.Strength ?? 0.0f) <= 0.0f)
+                if (Controlled == null || Controlled == this)
                 {
                     InvisibleTimer = 0.0f;
                 }

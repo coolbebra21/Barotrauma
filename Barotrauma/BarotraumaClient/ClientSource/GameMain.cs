@@ -487,7 +487,7 @@ namespace Barotrauma
             CoreEntityPrefab.InitCorePrefabs();
             GameModePreset.Init();
 
-            SaveUtil.DeleteDownloadedSubs();
+            //SaveUtil.DeleteDownloadedSubs();
             SubmarineInfo.RefreshSavedSubs();
 
             TitleScreen.LoadState = 75.0f;

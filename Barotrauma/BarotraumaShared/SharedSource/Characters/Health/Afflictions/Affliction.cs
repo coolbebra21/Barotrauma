@@ -437,7 +437,7 @@ namespace Barotrauma
 
         public bool ShouldShowIcon(Character afflictedCharacter)
         {
-            return Strength >= (afflictedCharacter == Character.Controlled ? Prefab.ShowIconThreshold : Prefab.ShowIconToOthersThreshold);
+            return Strength > 0;
         }
     }
 }

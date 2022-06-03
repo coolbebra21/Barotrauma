@@ -96,7 +96,7 @@ namespace Barotrauma
             }
             
             //stop water sounds if no sub is loaded
-            if (Submarine.MainSub == null || Screen.Selected != GameMain.GameScreen)
+            if (Submarine.MainSub == null || Screen.Selected != GameMain.GameScreen || GameSettings.CurrentConfig.Audio.MuteAmbience)
             {
                 foreach (var chn in waterAmbienceChannels.Concat(flowSoundChannels).Concat(fireSoundChannels))
                 {
@@ -124,10 +124,13 @@ namespace Barotrauma
                 }
             }
 
-            UpdateWaterAmbience(ambienceVolume, deltaTime);
-            UpdateWaterFlowSounds(deltaTime);
-            UpdateRandomAmbience(deltaTime);
-            UpdateHullSounds(deltaTime);
+            if (!GameSettings.CurrentConfig.Audio.MuteAmbience)
+            {
+                UpdateWaterAmbience(ambienceVolume, deltaTime);
+                UpdateWaterFlowSounds(deltaTime);
+                UpdateRandomAmbience(deltaTime);
+                UpdateHullSounds(deltaTime);
+            }
             UpdateFireSounds(deltaTime);
         }
 
@@ -244,20 +247,6 @@ namespace Barotrauma
                     {
                         targetFlowRight[flowSoundIndex] += 1.0f - distFallOff;
                     }
-                }
-            }
-
-            if (Character.Controlled?.CharacterHealth?.GetAffliction("psychosis") is AfflictionPsychosis psychosis)
-            {
-                if (psychosis.CurrentFloodType == AfflictionPsychosis.FloodType.Minor)
-                {
-                    targetFlowLeft[0] = Math.Max(targetFlowLeft[0], 1.0f);
-                    targetFlowRight[0] = Math.Max(targetFlowRight[0], 1.0f);
-                }
-                else if (psychosis.CurrentFloodType == AfflictionPsychosis.FloodType.Major)
-                {
-                    targetFlowLeft[FlowSounds.Count - 1] = Math.Max(targetFlowLeft[FlowSounds.Count - 1], 1.0f);
-                    targetFlowRight[FlowSounds.Count - 1] = Math.Max(targetFlowRight[FlowSounds.Count - 1], 1.0f);
                 }
             }
 

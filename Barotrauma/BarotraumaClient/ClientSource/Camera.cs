@@ -33,14 +33,14 @@ namespace Barotrauma
             set { moveSmoothness = Math.Max(value, 0.01f); }
         }
 
-        private float minZoom = 0.1f;
+        private float minZoom = 0.006f;
         public float MinZoom
         {
-            get { return minZoom;}
-            set { minZoom = MathHelper.Clamp(value, 0.001f, 10.0f);   }
+            get { return minZoom; }
+            set { minZoom = MathHelper.Clamp(value, 0.001f, 10.0f); }
         }
 
-        private float maxZoom = 2.0f;
+        private float maxZoom = 10.0f;
         public float MaxZoom
         {
             get { return maxZoom; }

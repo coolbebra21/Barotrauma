@@ -196,8 +196,11 @@ namespace Barotrauma
             Submarine.DrawPaintedColors(spriteBatch, false);
             spriteBatch.End();
 
-            graphics.SetRenderTarget(null);
-            GameMain.LightManager.RenderLightMap(graphics, spriteBatch, cam, renderTarget);
+            if (GameMain.LightManager.LightingEnabled)
+            {
+                graphics.SetRenderTarget(null);
+                GameMain.LightManager.RenderLightMap(graphics, spriteBatch, cam, renderTarget);
+            }
 
             //------------------------------------------------------------------------
             graphics.SetRenderTarget(renderTargetBackground);

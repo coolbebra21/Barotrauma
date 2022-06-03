@@ -43,11 +43,6 @@ namespace Barotrauma
         partial void UpdateProjSpecific(CharacterHealth characterHealth, Limb targetLimb, float deltaTime)
         {
             if (Character.Controlled != characterHealth.Character) return;
-            UpdateFloods(deltaTime);
-            UpdateSounds(characterHealth.Character, deltaTime);
-            UpdateFires(characterHealth.Character, deltaTime);
-            UpdateInvisibleCharacters(deltaTime);
-            UpdateFakeBroken(deltaTime);
         }
 
         private void UpdateSounds(Character character, float deltaTime)
