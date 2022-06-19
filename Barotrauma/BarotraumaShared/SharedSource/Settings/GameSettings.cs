@@ -161,6 +161,7 @@ namespace Barotrauma
                         RadialDistortion = true,
                         InventoryScale = 1.0f,
                         LightMapScale = 1.0f,
+                        VisibleLightLimit = 50,
                         TextScale = 1.0f,
                         HUDScale = 1.0f,
                         Specularity = true,
@@ -200,6 +201,7 @@ namespace Barotrauma
                 public float HUDScale;
                 public float InventoryScale;
                 public float LightMapScale;
+                public int VisibleLightLimit;
                 public float TextScale;
                 public bool RadialDistortion;
             }
@@ -224,6 +226,7 @@ namespace Barotrauma
                     {
                         MusicVolume = 0.3f,
                         SoundVolume = 0.5f,
+                        UiVolume = 0.3f,
                         MuteAmbience = false,
                         VoiceChatVolume = 0.5f,
                         VoiceChatCutoffPrevention = 0,
@@ -233,7 +236,6 @@ namespace Barotrauma
                         UseDirectionalVoiceChat = true,
                         VoipAttenuationEnabled = true,
                         VoiceSetting = VoiceMode.PushToTalk,
-                        UseLocalVoiceByDefault = false,
                         DisableVoiceChatFilters = false
                     };
                     return audioSettings;
@@ -248,6 +250,7 @@ namespace Barotrauma
 
                 public float MusicVolume;
                 public float SoundVolume;
+                public float UiVolume;
                 public bool MuteAmbience;
                 public float VoiceChatVolume;
                 public int VoiceChatCutoffPrevention;
@@ -264,7 +267,6 @@ namespace Barotrauma
                 public string VoiceCaptureDevice;
                 
                 public float NoiseGateThreshold;
-                public bool UseLocalVoiceByDefault;
                 public bool DisableVoiceChatFilters;
             }
 
@@ -286,12 +288,13 @@ namespace Barotrauma
                         { InputType.Aim, MouseButton.SecondaryMouse },
 
                         { InputType.InfoTab, Keys.Tab },
-                        { InputType.Chat, Keys.T },
-                        { InputType.RadioChat, Keys.R },
+                        { InputType.Chat, Keys.None },
+                        { InputType.RadioChat, Keys.None },
+                        { InputType.ActiveChat, Keys.T },
                         { InputType.CrewOrders, Keys.C },
 
                         { InputType.Voice, Keys.V },
-                        { InputType.LocalVoice, Keys.B },
+                        { InputType.ToggleChatMode, Keys.R },
                         { InputType.Command, MouseButton.MiddleMouse },
                         { InputType.PreviousFireMode, MouseButton.MouseWheelDown },
                         { InputType.NextFireMode, MouseButton.MouseWheelUp },
@@ -303,7 +306,6 @@ namespace Barotrauma
                         { InputType.Down, Keys.S },
                         { InputType.Left, Keys.A },
                         { InputType.Right, Keys.D },
-                        { InputType.ToggleInventory, Keys.Q },
 
                         { InputType.SelectNextCharacter, Keys.Z },
                         { InputType.SelectPreviousCharacter, Keys.X },
@@ -333,14 +335,32 @@ namespace Barotrauma
                         if (!bindings.ContainsKey(inputType)) { bindings.Add(inputType, defaultBindings[inputType]); }
                     }
 
+                    bool playerConfigContainsNewChatBinds = false;
                     foreach (XElement element in elements)
                     {
                         foreach (XAttribute attribute in element.Attributes())
                         {
                             if (Enum.TryParse(attribute.Name.LocalName, out InputType result))
                             {
+                                if (!playerConfigContainsNewChatBinds)
+                                {
+                                    playerConfigContainsNewChatBinds = result == InputType.ActiveChat;
+                                }
                                 bindings[result] = element.GetAttributeKeyOrMouse(attribute.Name.LocalName, bindings[result]);
                             }
+                        }
+                    }
+
+                    // Clear the old chat binds for configs saved before the introduction of the new chat binds
+                    if (!playerConfigContainsNewChatBinds)
+                    {
+                        if (bindings.ContainsKey(InputType.Chat))
+                        {
+                            bindings[InputType.Chat] = Keys.None;
+                        }
+                        if (bindings.ContainsKey(InputType.RadioChat))
+                        {
+                            bindings[InputType.RadioChat] = Keys.None;
                         }
                     }
 
@@ -454,25 +474,31 @@ namespace Barotrauma
 
         public static void SetCurrentConfig(in Config newConfig)
         {
-            bool setGraphicsMode =
-                currentConfig.Graphics.Width != newConfig.Graphics.Width
-                || currentConfig.Graphics.Height != newConfig.Graphics.Height
-                || currentConfig.Graphics.VSync != newConfig.Graphics.VSync
-                || currentConfig.Graphics.DisplayMode != newConfig.Graphics.DisplayMode;
-
+            bool resolutionChanged = 
+                currentConfig.Graphics.Width != newConfig.Graphics.Width || 
+                currentConfig.Graphics.Height != newConfig.Graphics.Height;
             bool languageChanged = currentConfig.Language != newConfig.Language;
-
             bool audioOutputChanged = currentConfig.Audio.AudioOutputDevice != newConfig.Audio.AudioOutputDevice;
             bool voiceCaptureChanged = currentConfig.Audio.VoiceCaptureDevice != newConfig.Audio.VoiceCaptureDevice;
-
             bool textScaleChanged = Math.Abs(currentConfig.Graphics.TextScale - newConfig.Graphics.TextScale) > MathF.Pow(2.0f, -7);
+
+            bool hudScaleChanged = !MathUtils.NearlyEqual(currentConfig.Graphics.HUDScale, newConfig.Graphics.HUDScale);
+
+            bool setGraphicsMode =
+                resolutionChanged ||
+                currentConfig.Graphics.VSync != newConfig.Graphics.VSync ||
+                currentConfig.Graphics.DisplayMode != newConfig.Graphics.DisplayMode;
 
             currentConfig = newConfig;
 
 #if CLIENT
             if (setGraphicsMode)
             {
-                GameMain.Instance.ApplyGraphicsSettings();
+                GameMain.Instance.ApplyGraphicsSettings(recalculateFontsAndStyles: true);
+            }
+            else if (textScaleChanged)
+            {
+                GUIStyle.RecalculateFonts();
             }
 
             if (audioOutputChanged)
@@ -485,12 +511,9 @@ namespace Barotrauma
                 VoipCapture.ChangeCaptureDevice(currentConfig.Audio.VoiceCaptureDevice);
             }
 
-            if (textScaleChanged)
+            if (hudScaleChanged)
             {
-                foreach (var font in GUIStyle.Fonts.Values)
-                {
-                    font.Prefabs.ForEach(p => p.LoadFont());
-                }
+                HUDLayoutSettings.CreateAreas();
             }
             
             GameMain.SoundManager?.ApplySettings();
@@ -506,23 +529,11 @@ namespace Barotrauma
 
             XElement graphicsElement = new XElement("graphicssettings"); root.Add(graphicsElement);
             currentConfig.Graphics.SerializeElement(graphicsElement);
-            
-#region Backwards compatibility crap
-#warning TODO: remove once modding refactor ships in a stable release
-            XElement backwardsCompatibilityGraphicsMode = new XElement(graphicsElement); root.Add(backwardsCompatibilityGraphicsMode);
-            backwardsCompatibilityGraphicsMode.Name = "graphicsmode";
-#endregion
-            
+
             XElement audioElement = new XElement("audio"); root.Add(audioElement);
             currentConfig.Audio.SerializeElement(audioElement);
 
             XElement contentPackagesElement = new XElement("contentpackages"); root.Add(contentPackagesElement);
-#region More backwards compatibility crap
-            XComment backwardsCompatibleComment = new XComment("Backwards compatibility"); contentPackagesElement.Add(backwardsCompatibleComment);
-#warning TODO: remove once modding refactor ships in a stable release
-            XElement backwardsCompatibleCoreElement = new XElement("core"); contentPackagesElement.Add(backwardsCompatibleCoreElement);
-            backwardsCompatibleCoreElement.SetAttributeValue("name", "Vanilla 0.9");
-#endregion
             XComment corePackageComment = new XComment(ContentPackageManager.EnabledPackages.Core?.Name ?? "Vanilla"); contentPackagesElement.Add(corePackageComment);
             XElement corePackageElement = new XElement(ContentPackageManager.CorePackageElementName); contentPackagesElement.Add(corePackageElement);
             corePackageElement.SetAttributeValue("path", ContentPackageManager.EnabledPackages.Core?.Path ?? ContentPackageManager.VanillaFileList);
