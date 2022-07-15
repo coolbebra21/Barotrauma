@@ -45,8 +45,8 @@ namespace Barotrauma
             Instance = new SettingsMenu(mainParent);
             return Instance;
         }
-        
-        private SettingsMenu(RectTransform mainParent)
+
+        private SettingsMenu(RectTransform mainParent, GameSettings.Config setConfig = default)
         {
             unsavedConfig = GameSettings.CurrentConfig;
             
@@ -464,8 +464,9 @@ namespace Barotrauma
             Slider(voiceChat, (0, 500), 26, (v) => $"{Round(v)} ms", unsavedConfig.Audio.VoiceChatCutoffPrevention, (v) => unsavedConfig.Audio.VoiceChatCutoffPrevention = Round(v), TextManager.Get("CutoffPreventionTooltip"));
         }
 
-
+        private readonly Dictionary<GUIButton, Func<LocalizedString>> inputButtonValueNameGetters = new Dictionary<GUIButton, Func<LocalizedString>>();
         private bool inputBoxSelectedThisFrame = false;
+
         private void CreateControlsTab()
         {
             GUIFrame content = CreateNewContentFrame(Tab.Controls);
@@ -489,7 +490,7 @@ namespace Barotrauma
             GUILayoutGroup createInputRowLayout()
                 => new GUILayoutGroup(new RectTransform((1.0f, 0.1f), keyMapList.Content.RectTransform), isHorizontal: true);
 
-            HashSet<GUIButton> inputButtons = new HashSet<GUIButton>();
+            inputButtonValueNameGetters.Clear();
             Action<KeyOrMouse>? currentSetter = null;
             void addInputToRow(GUILayoutGroup currRow, LocalizedString labelText, Func<LocalizedString> valueNameGetter, Action<KeyOrMouse> valueSetter, bool isLegacyBind = false)
             {
@@ -507,7 +508,7 @@ namespace Barotrauma
                 {
                     OnClicked = (btn, obj) =>
                     {
-                        inputButtons.ForEach(b =>
+                        inputButtonValueNameGetters.Keys.ForEach(b =>
                         {
                             if (b != btn) { b.Selected = false; }
                         });
@@ -532,7 +533,7 @@ namespace Barotrauma
                     inputBox.Color = Color.Lerp(inputBox.Color, inputBox.DisabledColor, 0.5f);
                     inputBox.TextColor = Color.Lerp(inputBox.TextColor, label.DisabledTextColor, 0.5f);
                 }
-                inputButtons.Add(inputBox);
+                inputButtonValueNameGetters.Add(inputBox, valueNameGetter);
             }
 
             var inputListener = new GUICustomComponent(new RectTransform(Vector2.Zero, layout.RectTransform), onUpdate: (deltaTime, component) =>
@@ -548,7 +549,7 @@ namespace Barotrauma
                 void clearSetter()
                 {
                     currentSetter = null;
-                    inputButtons.ForEach(b => b.Selected = false);
+                    inputButtonValueNameGetters.Keys.ForEach(b => b.Selected = false);
                 }
                 
                 void callSetter(KeyOrMouse v)
@@ -651,11 +652,14 @@ namespace Barotrauma
                     TextManager.Get("Reset"), style: "GUIButtonSmall")
                 {
                     ToolTip = TextManager.Get("SetDefaultBindingsTooltip"),
-                    OnClicked = (btn, userdata) => 
+                    OnClicked = (_, userdata) => 
                     {
                         unsavedConfig.InventoryKeyMap = GameSettings.Config.InventoryKeyMapping.GetDefault();
                         unsavedConfig.KeyMap = GameSettings.Config.KeyMapping.GetDefault();
-                        Create(mainFrame.Parent.RectTransform);
+                        foreach (var btn in inputButtonValueNameGetters.Keys)
+                        {
+                            btn.Text = inputButtonValueNameGetters[btn]();
+                        }
                         Instance?.SelectTab(Tab.Controls);
                         return true; 
                     }
@@ -763,7 +767,7 @@ namespace Barotrauma
         private void CreateBottomButtons()
         {
             GUIButton cancelButton =
-                new GUIButton(new RectTransform(new Vector2(1.0f, 1.0f), bottom.RectTransform), text: "Cancel")
+                new GUIButton(new RectTransform(new Vector2(1.0f, 1.0f), bottom.RectTransform), text: TextManager.Get("Cancel"))
                 {
                     OnClicked = (btn, obj) =>
                     {
@@ -772,7 +776,7 @@ namespace Barotrauma
                     }
                 };
             GUIButton applyButton =
-                new GUIButton(new RectTransform(new Vector2(1.0f, 1.0f), bottom.RectTransform), text: "Apply")
+                new GUIButton(new RectTransform(new Vector2(1.0f, 1.0f), bottom.RectTransform), text: TextManager.Get("applysettingsbutton"))
                 {
                     OnClicked = (btn, obj) =>
                     {
